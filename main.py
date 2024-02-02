@@ -9,7 +9,7 @@ def read_keys_from_file(filepath):
 
 
 def get_yesterdays_date():
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = date.today() - timedelta(days=6)
     yesterday = yesterday.strftime("%Y/%m/%d")
     return yesterday
 
@@ -29,23 +29,34 @@ def initialize_twilio_client(account_sid, auth_token):
 
 
 def create_message_body(yesterday, scores):
+    team_emojis = {
+        "BOS": {"win": "🍀", "lose": "☘️"},
+        "LAL": {"win": "😞", "lose": "😂"},
+        "PHI": {"win": "😞", "lose": "😂"},
+        "SAS": {"win": "😍", "lose": "😞"},
+        "DAL": {"win": "🐎", "lose": "🌎"},
+        "MIL": {"win": "😞", "lose": "😂"},
+    }
+
     message_body = f"{yesterday}\n\n"
     for game in scores["games"]:
-        if (
-            game["home"]["alias"] == "BOS" and game["home_points"] > game["away_points"]
-        ) or (
-            game["away"]["alias"] == "BOS" and game["home_points"] < game["away_points"]
-        ):
-            game_score = f"{game['home']['alias']}-{game['away']['alias']} : {game['home_points']}-{game['away_points']} 🍀\n\n"
-        elif (
-            game["home"]["alias"] == "LAL" and game["home_points"] < game["away_points"]
-        ) or (
-            game["away"]["alias"] == "LAL" and game["home_points"] > game["away_points"]
-        ):
-            game_score = f"{game['home']['alias']}-{game['away']['alias']} : {game['home_points']}-{game['away_points']} 😂\n\n"
+        home_team = game["home"]["alias"]
+        away_team = game["away"]["alias"]
+        home_points = game["home_points"]
+        away_points = game["away_points"]
+
+        # Determine win/lose emojis for both teams
+        if home_points > away_points:
+            home_emoji = team_emojis.get(home_team, {}).get("win", "")
+            away_emoji = team_emojis.get(away_team, {}).get("lose", "")
         else:
-            game_score = f"{game['home']['alias']}-{game['away']['alias']} : {game['home_points']}-{game['away_points']}\n\n"
-        message_body += game_score
+            home_emoji = team_emojis.get(home_team, {}).get("lose", "")
+            away_emoji = team_emojis.get(away_team, {}).get("win", "")
+
+        # Append both emojis to the game result
+        game_result = f"{home_team}-{away_team} : {home_points}-{away_points} {home_emoji}{away_emoji}\n\n"
+
+        message_body += game_result
 
     print(message_body)
     return message_body
