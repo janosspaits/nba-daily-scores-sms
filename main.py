@@ -9,7 +9,7 @@ def read_keys_from_file(filepath):
 
 
 def get_yesterdays_date():
-    yesterday = date.today() - timedelta(days=6)
+    yesterday = date.today() - timedelta(days=1)
     yesterday = yesterday.strftime("%Y/%m/%d")
     return yesterday
 
