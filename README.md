@@ -1,3 +1,7 @@
+### Project abandoned 
+- only managed to make twilio work on whatsapp but that only works for one day and resets every time.
+- twilio did not work with my normal phone number
+
 # NBA Daily Scores SMS app
 
 Gets the scores from the previous day and sends an SMS message to your phone
